@@ -13,6 +13,13 @@ const estimateInfection = (period, typeOfPeriod, currentNum) => {
   return currentNum * (2 ** factor);
 };
 
+const estimateAvailableHospitalBeds = (totalBeds, severeCases) => {
+  const initialAvailableBeds = 0.35 * totalBeds;
+  const availableBeds = severeCases - initialAvailableBeds;
+  return availableBeds;
+};
+
+
 const covid19ImpactEstimator = (data) => {
   const impact = {};
   const severeImpact = {};
@@ -22,10 +29,25 @@ const covid19ImpactEstimator = (data) => {
   impact.currentlyInfected = impactCurrentlyInfected;
   severeImpact.currentlyInfected = sevImpactCurrentlyInfected;
 
-  impact.infectionsByRequestedTime = estimateInfection(data.timeToElapse, data.periodType,
+  const impactInfectionsEstimate = estimateInfection(data.timeToElapse, data.periodType,
     impactCurrentlyInfected);
-  severeImpact.infectionsByRequestedTime = estimateInfection(data.timeToElapse,
+  const sevImpactInfectionsEstimate = estimateInfection(data.timeToElapse,
     data.periodType, sevImpactCurrentlyInfected);
+
+  impact.infectionsByRequestedTime = impactInfectionsEstimate;
+  severeImpact.infectionsByRequestedTime = sevImpactInfectionsEstimate;
+
+  const impactSevereCasesEstimate = 0.15 * impactInfectionsEstimate;
+  const sevImpactSevereCasesEstimate = 0.15 * sevImpactInfectionsEstimate;
+
+  impact.severeCasesByRequestedTime = impactSevereCasesEstimate;
+  severeImpact.severeCasesByRequestedTime = sevImpactSevereCasesEstimate;
+
+  impact.hospitalBedsByRequestedTime = estimateAvailableHospitalBeds(data.totalHospitalBeds,
+    impactSevereCasesEstimate);
+  severeImpact.hospitalBedsByRequestedTime = estimateAvailableHospitalBeds(
+    data.totalHospitalBeds, sevImpactSevereCasesEstimate
+  );
 
   return {
     data,
