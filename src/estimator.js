@@ -30,7 +30,7 @@ const estimateDollarsInFlight = (infectionsEstimate, period, typeOfPeriod,
     convertedPeriod = period;
   }
 
-  return Math.trunc(infectionsEstimate * population * avgDailyIncome) / convertedPeriod;
+  return Math.trunc((infectionsEstimate * population * avgDailyIncome) / convertedPeriod);
 };
 
 
