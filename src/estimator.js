@@ -14,7 +14,7 @@ const estimateInfection = (period, typeOfPeriod, currentNum) => {
 };
 
 const estimateAvailableHospitalBeds = (totalBeds, severeCases) => {
-  const initialAvailableBeds = 0.35 * totalBeds;
+  const initialAvailableBeds = Math.trunc(0.35 * totalBeds);
   const availableBeds = severeCases - initialAvailableBeds;
   return availableBeds;
 };
