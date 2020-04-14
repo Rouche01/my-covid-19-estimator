@@ -19,6 +19,20 @@ const estimateAvailableHospitalBeds = (totalBeds, severeCases) => {
   return Math.trunc(availableBeds);
 };
 
+const estimateDollarsInFlight = (infectionsEstimate, period, typeOfPeriod,
+  avgDailyIncome, population) => {
+  let convertedPeriod;
+  if (typeOfPeriod === 'months') {
+    convertedPeriod = period * 30;
+  } else if (typeOfPeriod === 'weeks') {
+    convertedPeriod = period * 7;
+  } else if (typeOfPeriod === 'days') {
+    convertedPeriod = period;
+  }
+
+  return Math.trunc(infectionsEstimate * population * avgDailyIncome) / convertedPeriod;
+};
+
 
 const covid19ImpactEstimator = (data) => {
   const impact = {};
@@ -48,6 +62,20 @@ const covid19ImpactEstimator = (data) => {
   severeImpact.hospitalBedsByRequestedTime = estimateAvailableHospitalBeds(
     data.totalHospitalBeds, sevImpactSevereCasesEstimate
   );
+
+  impact.casesForICUByRequestedTime = Math.trunc(0.05 * impactInfectionsEstimate);
+  severeImpact.casesForICUByRequestedTime = Math.trunc(0.05 * sevImpactInfectionsEstimate);
+
+  impact.casesForVentilatorsByRequestedTime = Math.trunc(0.02 * impactInfectionsEstimate);
+  severeImpact.casesForVentilatorsByRequestedTime = Math.trunc(0.02 * sevImpactInfectionsEstimate);
+
+  impact.dollarsInFlight = estimateDollarsInFlight(impactInfectionsEstimate,
+    data.timeToElapse, data.periodType, data.region.avgDailyIncomeInUSD,
+    data.region.avgDailyIncomePopulation);
+
+  severeImpact.dollarsInFlight = estimateDollarsInFlight(sevImpactInfectionsEstimate,
+    data.timeToElapse, data.periodType, data.region.avgDailyIncomeInUSD,
+    data.region.avgDailyIncomePopulation);
 
   return {
     data,
