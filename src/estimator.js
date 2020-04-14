@@ -8,7 +8,7 @@ const estimateInfection = (period, typeOfPeriod, currentNum) => {
     convertedPeriod = period;
   }
 
-  const factor = Math.trunc(convertedPeriod / 3);
+  // const factor = Math.trunc(convertedPeriod / 3);
 
   return currentNum * (2 ** factor);
 };
